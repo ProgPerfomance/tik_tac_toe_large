@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../core/ad_manager.dart';
 import '../core/widgets/back_button.dart';
 import '../core/widgets/board.dart';
 import '../core/widgets/page_wrapper.dart';
@@ -103,7 +104,11 @@ class WinBanner extends StatelessWidget {
           ),
           child: Padding(
             padding: const EdgeInsets.only(bottom: 32.0),
-            child: Align(alignment: Alignment.bottomCenter,child: RepeatButton(callback: (){
+            child: Align(alignment: Alignment.bottomCenter,child: RepeatButton(callback: () async {
+              await AdManager().maybeShowAd(
+                context: context,
+                onFinish: () {},
+              );
               viewmodel.startGame(height, width, bot);
             }),),
           ),

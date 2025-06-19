@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:tik_tac_toe_large/core/widgets/back_button.dart';
 import 'package:tik_tac_toe_large/home/home_view.dart';
 
+import '../core/ad_manager.dart';
 import '../core/widgets/page_wrapper.dart';
 import '../game/game_view.dart';
 import '../game/game_viewmodel.dart';
@@ -45,8 +46,8 @@ class SetBotDifficulty extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: (){
-
+      onTap: () async {
+        await AdManager().maybeShowAd(context: context, onFinish: () {});
         final bot = BotEntity.newBot(difficulty);
 
         final gameViewmodel = Provider.of<GameViewmodel>(context, listen: false);

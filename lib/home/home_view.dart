@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tik_tac_toe_large/bot_dificult/bot_dificult_view.dart';
+import 'package:tik_tac_toe_large/core/ad_manager.dart';
 import 'package:tik_tac_toe_large/game/game_view.dart';
 import 'package:tik_tac_toe_large/game/game_viewmodel.dart';
 import 'package:tik_tac_toe_large/home/home_viewmodel.dart';
@@ -24,23 +25,27 @@ class HomeView extends StatelessWidget {
                 SizedBox(
                   width: MediaQuery.of(context).size.width / 1.5,
                   height: MediaQuery.of(context).size.width / 1.5,
-                  child: PageView.builder(itemBuilder: (context,index) {
-                    final item = gameMods[index];
-                  return  Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: Color(0xff808080),
-                          width: 3,
+                  child: PageView.builder(
+                    itemBuilder: (context, index) {
+                      final item = gameMods[index];
+                      return Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Color(0xff808080),
+                            width: 3,
+                          ),
+                          borderRadius: BorderRadius.circular(18),
+                          image: DecorationImage(
+                            image: AssetImage(item.imagePath),
+                          ),
                         ),
-                        borderRadius: BorderRadius.circular(18),
-                        image: DecorationImage(
-                          image: AssetImage(item.imagePath),
-                        ),
-                      ),
-                    );
-                  }, itemCount: gameMods.length,onPageChanged: (int page) {
-                    viewmodel.setSelectedIndex(page);
-                  },)
+                      );
+                    },
+                    itemCount: gameMods.length,
+                    onPageChanged: (int page) {
+                      viewmodel.setSelectedIndex(page);
+                    },
+                  ),
                 ),
                 SizedBox(height: 32),
                 Column(
@@ -48,33 +53,54 @@ class HomeView extends StatelessWidget {
                   children: [
                     ModeButton(
                       callback: () {
+                        AdManager().maybeShowAd(
+                          context: context,
+                          onFinish: () {},
+                        );
                         GameModeEntity mode = gameMods[viewmodel.selectedIndex];
-                        final gameViewmodel = Provider.of<GameViewmodel>(context, listen: false);
+                        final gameViewmodel = Provider.of<GameViewmodel>(
+                          context,
+                          listen: false,
+                        );
                         gameViewmodel.startGame(mode.height, mode.width, null);
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => GameView(width: mode.width, height: mode.height),
+                            builder:
+                                (context) => GameView(
+                                  width: mode.width,
+                                  height: mode.height,
+                                ),
                           ),
                         );
                       },
                       title: 'С другом',
                     ),
-                    SizedBox(height: 18,),
+                    SizedBox(height: 18),
                     ModeButton(
-                      callback: () {
-                        GameModeEntity mode = gameMods[viewmodel.selectedIndex];
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => BotDificultView(gameMode: mode),
-                          ),
-                        );
+                      callback: () async {
+                        try {
+                          await AdManager().maybeShowAd(
+                            context: context,
+                            onFinish: () {},
+                          );
+                        } catch (e) {
+                        } finally {
+                          GameModeEntity mode =
+                              gameMods[viewmodel.selectedIndex];
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder:
+                                  (context) => BotDificultView(gameMode: mode),
+                            ),
+                          );
+                        }
                       },
                       title: 'С роботом',
                     ),
                     SizedBox(height: 24),
-                  //  ModeButton(callback: () {}, title: 'С роботом'),
+                    //  ModeButton(callback: () {}, title: 'С роботом'),
                   ],
                 ),
               ],
@@ -126,9 +152,6 @@ class GameModeEntity {
     required this.imagePath,
   });
 }
-
-
-
 
 List<GameModeEntity> gameMods = [
   GameModeEntity(width: 3, height: 3, imagePath: 'assets/t3t.png'),

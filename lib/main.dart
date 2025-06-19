@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tik_tac_toe_large/game/game_view.dart';
 import 'package:tik_tac_toe_large/game/game_viewmodel.dart';
 import 'package:tik_tac_toe_large/home/home_view.dart';
 import 'package:tik_tac_toe_large/home/home_viewmodel.dart';
 
-void main() {
+import 'core/ad_manager.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await AdManager().init();
   runApp(const MyApp());
 }
 
